@@ -1,10 +1,11 @@
 import requests
 from pprint import pprint
+import config
 import urllib.parse
 
 # Ler msgs que estão sendo mandadas para o bot
 chat_id = '-1001410402288'
-token = '1775549137:AAHNBuPFWmvq-K1aI2SHhojVqQC2unQBGoA'
+token = config.token_telegram
 mensagem = 'Fechamento da próxima fatura visa: 24/04/2021'
 msg_url = urllib.parse.quote(mensagem)
 # url_base = f'https://api.telegram.org/bot{token}/getUpdates'

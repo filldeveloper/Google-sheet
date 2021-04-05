@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 from pprint import pprint
+import credentials
 
 
 def extrato_bb():
@@ -17,9 +18,9 @@ def extrato_bb():
 
     time.sleep(10)
 
-    agencia = "1503-2"
-    conta = "112141-3"
-    senha = "12230314"
+    agencia = credentials.agencia_bb
+    conta = credentials.conta_bb
+    senha = credentials.senha_bb
     # Preencher o campo agência
     chrome.find_element_by_id("dependenciaOrigem").send_keys(agencia)
     # Preencher o campo conta e apertar enter
@@ -216,7 +217,7 @@ def extrato_caixa():
     chrome.get('https://internetbanking.caixa.gov.br/sinbc/#!nb/login')
     time.sleep(5)
 
-    usuario = "felipebarreto03"
+    usuario = credentials.usuario_caixa
 
     chrome.find_element_by_id("nomeUsuario").send_keys(usuario)
 
