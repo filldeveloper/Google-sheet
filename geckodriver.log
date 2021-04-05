@@ -1,0 +1,82 @@
+1609825532913	geckodriver	INFO	Listening on 127.0.0.1:48443
+1609825532918	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofiled8tgfM"
+console.info: MINT: Trying to use the system region (based on LANG).
+console.info: MINT: System region is BR
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+console.info: MINT: Loading search-config defaults.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1609825535157	Marionette	INFO	Listening on port 37979
+1609825535247	Marionette	WARN	TLS certificate errors will be ignored for this session
+1609825542192	Marionette	INFO	Stopped listening on port 37979
+1609825595231	geckodriver	INFO	Listening on 127.0.0.1:42765
+1609825595235	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileudMPOE"
+console.info: MINT: Trying to use the system region (based on LANG).
+console.info: MINT: System region is BR
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+console.info: MINT: Loading search-config defaults.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1609825597177	Marionette	INFO	Listening on port 38281
+1609825597264	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'MarionetteEvents'
+JavaScript error: https://www2.bancobrasil.com.br/aapf/includes/js/jquery.ui.dialog.js, line 54: TypeError: $.widget is not a function
+JavaScript error: resource://pdf.js/PdfStreamConverter.jsm, line 1089: NS_ERROR_FAILURE: Ignore PDF.js for this download.
+1609825644318	Marionette	INFO	Stopped listening on port 38281
+1609825646518	geckodriver	INFO	Listening on 127.0.0.1:34605
+1609825646522	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileIMaIkw"
+console.info: MINT: Trying to use the system region (based on LANG).
+console.info: MINT: System region is BR
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+console.info: MINT: Loading search-config defaults.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1609825648305	Marionette	INFO	Listening on port 45771
+1609825648349	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'MarionetteEvents'
+JavaScript error: https://www2.bancobrasil.com.br/aapf/includes/js/jquery.ui.dialog.js, line 54: TypeError: $.widget is not a function
+1609825664721	Marionette	INFO	Stopped listening on port 45771
+1609825718179	geckodriver	INFO	Listening on 127.0.0.1:40929
+1609825718183	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileXIFtzT"
+console.info: MINT: Trying to use the system region (based on LANG).
+console.info: MINT: System region is BR
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+console.info: MINT: Loading search-config defaults.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1609825720106	Marionette	INFO	Listening on port 38229
+1609825720214	Marionette	WARN	TLS certificate errors will be ignored for this session
+1609825742669	Marionette	INFO	Stopped listening on port 38229
+1609825756189	geckodriver	INFO	Listening on 127.0.0.1:36613
+1609825756193	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileaZisae"
+console.info: MINT: Trying to use the system region (based on LANG).
+console.info: MINT: System region is BR
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+console.info: MINT: Loading search-config defaults.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1609825758040	Marionette	INFO	Listening on port 38069
+1609825758119	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'MarionetteEvents'
+JavaScript warning: https://tm.jsuol.com.br/uoltm.js?id=braj6o, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/uoltm.js?id=braj6o, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/modules/client-purge.js, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/modules/client-purge.js, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/modules/update-persistence.js, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/modules/update-persistence.js, line 1: unreachable code after return statement
+JavaScript error: https://www2.bancobrasil.com.br/aapf/includes/js/jquery.ui.dialog.js, line 54: TypeError: $.widget is not a function
+JavaScript error: resource://pdf.js/PdfStreamConverter.jsm, line 1089: NS_ERROR_FAILURE: Ignore PDF.js for this download.
+1609825837803	Marionette	INFO	Stopped listening on port 38069
+1609825848049	geckodriver	INFO	Listening on 127.0.0.1:60923
+1609825848061	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileJ5zVIT"
+console.info: MINT: Trying to use the system region (based on LANG).
+console.info: MINT: System region is BR
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+console.info: MINT: Loading search-config defaults.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1609825849937	Marionette	INFO	Listening on port 45667
+1609825849997	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'MarionetteEvents'
+JavaScript warning: https://tm.jsuol.com.br/uoltm.js?id=braj6o, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/uoltm.js?id=braj6o, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/modules/client-purge.js, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/modules/client-purge.js, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/modules/update-persistence.js, line 1: unreachable code after return statement
+JavaScript warning: https://tm.jsuol.com.br/modules/update-persistence.js, line 1: unreachable code after return statement
+JavaScript error: https://www2.bancobrasil.com.br/aapf/includes/js/jquery.ui.dialog.js, line 54: TypeError: $.widget is not a function
+1609825861442	Marionette	INFO	Stopped listening on port 45667
