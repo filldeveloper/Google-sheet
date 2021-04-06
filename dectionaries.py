@@ -25,6 +25,6 @@ for dictio in dicionario['extrato']:
     lista.append(dictio['Data'])
     lista.append(dictio['Descrição'])
     lista.append(dictio['Valor'])
-    lista2.append(lista)
+    lista2.append(lista) 
     lista = []
 print(lista2)

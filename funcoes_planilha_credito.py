@@ -3,8 +3,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
-import pandas as pd
-import time
+import pandas as pd 
+import time 
 from pprint import pprint
 import credenciais
 

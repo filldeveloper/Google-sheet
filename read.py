@@ -79,6 +79,8 @@ for i in valor_visa:
 
 resultado_smiles = []
 for i in valor_smiles:
+    if i not in planilha:
+        resultado_smiles.append(i)
 
 
 sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
