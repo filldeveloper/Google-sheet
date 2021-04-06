@@ -11,5 +11,5 @@ msg_url = urllib.parse.quote(mensagem)
 # url_base = f'https://api.telegram.org/bot{token}/getUpdates'
 url_send = f'https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={msg_url}'
 resultado = requests.post(url_send)
-pprint(msg_url)
+pprint(f'Essa é a mensagem que será enviada ao telegram{msg_url}')
 # time.sleep(50)
