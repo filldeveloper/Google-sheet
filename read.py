@@ -12,13 +12,13 @@ historico_compras_smiles = lista_definitiva[1]
 historico_compras_nanquim = lista_definitiva[2]
 fechamento_visa = lista_definitiva[3]
 fechamento_smiles = lista_definitiva[4]
-fechamento_elo = lista_definitiva[5]
+fechamento_nanquim = lista_definitiva[5]
 
 print(f'Fechamento da próxima fatura visa: {fechamento_visa}')
 print(f'Histórico de compras Visa: {historico_compras_visa}')
 print(f'Fechamento da próxima fatura smiles: {fechamento_smiles}')
 print(f'Histórico de compras Visa: {historico_compras_smiles}')
-print(f'Fechamento da próxima fatura Elo Nanquim: {fechamento_elo}')
+print(f'Fechamento da próxima fatura Elo Nanquim: {fechamento_nanquim}')
 print(f'Histórico de compras Visa: {historico_compras_nanquim}')
 
 dicionario_meses = {5: "api", 6: "api2"}
@@ -61,9 +61,9 @@ for gasto in historico_compras_nanquim:
     valor_nanquim.append(gasto)
 # PAREI AQUI, LEVAR NOTE PARA CONTINUAR
 
-aba = int(fechamento_visa.split('/')[1]+1)
+aba = int(fechamento_visa.split('/')[1])+1
 range = f'{dicionario_meses[aba]}!A2:C17'
-result = sheet.values().get(spreadshet=SAMPLE_SPREADSHEET_ID,
+result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                             range=range).execute().get('values', [])
 
 planilha = []
@@ -73,23 +73,93 @@ for row in result:
     planilha.append(row)
 
 resultado_visa = []
+proxima_fatura = []
+fatura_seguinte = []
 for i in valor_visa:
     if i not in planilha:
         resultado_visa.append(i)
+
+data_timestamp_visa = time.mktime(datetime.strptime(
+    fechamento_visa, '%d/%m/%Y').timetuple())
+
+# Split na data de fechamento da fatura para pegar apenas o ano
+data_visa = fechamento_visa.split('/')
+for compra in resultado_visa:
+    data_compra = compra[0] + '/' + data_visa[2]
+    data_timestamp =time.mktime(datetime.strptime(
+    data_compra, '%d/%m/%Y').timetuple())
+    if int(data_timestamp) < int(data_timestamp_visa):
+        proxima_fatura.append(compra)
+    else:
+        fatura_seguinte.append(compra)
 
 resultado_smiles = []
 for i in valor_smiles:
     if i not in planilha:
         resultado_smiles.append(i)
+    
+data_timestamp_smiles = time.mktime(datetime.strptime(
+    fechamento_smiles, '%d/%m/%Y').timetuple())
 
+# Split na data de fachamento smiles para pegar o ano
+data_smiles = fechamento_smiles.split('/')
+for compra in resultado_smiles:
+    data_compra = compra[0] + '/' + data_smiles[2] 
+    data_timestamp =time.mktime(datetime.strptime(
+    data_compra, '%d/%m/%Y').timetuple())
+    if int(data_timestamp) < int(data_timestamp_smiles):
+        proxima_fatura.append(compra)
+    else:
+        fatura_seguinte.append(compra)
 
+resultado_nanquim = []
+for i in valor_nanquim:
+    if i not in planilha:
+        resultado_nanquim.append(i)
+
+data_timestamp_nanquim = time.mktime(datetime.strptime(
+    fechamento_nanquim, '%d/%m/%Y').timetuple())
+
+# Split na data de fechamento elo nanquim para pegar o ano 
+data_nanquim = fechamento_nanquim.split('/')
+for compra in resultado_nanquim:
+    data_compra = compra[0] + '/' + data_nanquim[2]
+    data_timestamp =time.mktime(datetime.strptime(
+    data_compra, '%d/%m/%Y').timetuple())
+    if int(data_timestamp) < int(data_timestamp_nanquim):
+        proxima_fatura.append(compra)
+    else:
+        fatura_seguinte.append(compra)
+
+next_empty_row = len(result) + 2
+range = f'{dicionario_meses[aba]}!A{next_empty_row}'
+sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                      range=range,
+                      valueInputOption="USER_ENTERED",
+                      body={"values": proxima_fatura}).execute()
+
+aba += 1
+range = f'{dicionario_meses[aba]}!A2:C17'
+result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                            range=range).execute().get('values', [])
+
+resultado_final = []
+for i in fatura_seguinte:
+    if i not in result:
+        resultado_final.append(i)
+
+next_empty_row = len(result) + 2
+range = f'{dicionario_meses[aba]}!A{next_empty_row}'
 sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                       range=range,
                       valueInputOption="USER_ENTERED",
                       body={"values": resultado_final}).execute()
+
 print("Cartões BB atualizados!")
 mensagem_final = "Planilha de Cartões BB atualizada!"
 mensagem_bot_telegram(mensagem_final)
+
+exit()
 
 ###################################################################
 time.sleep(5)

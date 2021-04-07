@@ -34,6 +34,7 @@ def extrato_bb():
     time.sleep(6)
     # Digita Cartões no campo de busca e aperta Enter
     chrome.find_element_by_id("acheFacil").send_keys("cartões", Keys.ENTER)
+    time.sleep(2)
     # Escolhe a opção de extrato e entra
     act = ActionChains(chrome)
     act.click(chrome.find_element_by_xpath(
