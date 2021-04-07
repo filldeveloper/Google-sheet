@@ -4,7 +4,7 @@ import credenciais
 import urllib.parse
 
 # Ler msgs que estão sendo mandadas para o bot
-chat_id = '-1001410402288'
+chat_id = credenciais.chat_id_telegram
 token = credenciais.token_telegram
 mensagem = 'Fechamento da próxima fatura visa: 24/04/2021'
 msg_url = urllib.parse.quote(mensagem)
