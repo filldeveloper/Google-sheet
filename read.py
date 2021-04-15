@@ -159,8 +159,6 @@ print("Cartões BB atualizados!")
 mensagem_final = "Planilha de Cartões BB atualizada!"
 mensagem_bot_telegram(mensagem_final)
 
-exit()
-
 ###################################################################
 time.sleep(5)
 # Chamando a função que pega os valores do extrato CAIXA
