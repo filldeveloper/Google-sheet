@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def start(update, context):
     message = update.message.reply_text(
-        'Seja bem vindo ao Bot Telegram do Felipe!\n\nEscolha uma opção: \n1 - Felipe\n2 - Bruno\n3 - Vavá\n4 - Silvia',
+        'Seja bem vindo ao Bot Telegram do Felipe Barreto!\n\nEscolha uma opção: \n1 - Felipe\n2 - Bruno\n3 - Vavá\n4 - Silvia',
         reply_markup=ReplyKeyboardRemove()
     )
     echo(update, context)
