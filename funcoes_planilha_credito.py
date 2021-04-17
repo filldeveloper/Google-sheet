@@ -353,10 +353,11 @@ def extrato_caixa():
 def mensagem_bot_telegram(mensagem):
     import requests
     import urllib.parse
+    import credenciais
 
     # Ler msgs que estão sendo mandadas para o bot
-    chat_id = '-1001410402288'
-    token = '1775549137:AAHNBuPFWmvq-K1aI2SHhojVqQC2unQBGoA'
+    chat_id = credenciais.chat_id_telegram
+    token = credenciais.token_telegram
     mensagem_bot = mensagem
     msg_url = urllib.parse.quote(mensagem_bot)
     # url_base = f'https://api.telegram.org/bot{token}/getUpdates'
