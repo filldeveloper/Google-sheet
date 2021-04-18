@@ -47,6 +47,8 @@ def extrato_bb():
 
     time.sleep(2)
     # Extrair a data de fechamento da próxima fatura
+    chrome.find_element_by_xpath('//*[@id="faturasAtual"]/li[11]/a').click()
+    time.sleep(2)
     elemento = chrome.find_element_by_xpath(
         '//*[@id="fatura2"]/table/tbody/tr[4]/td/div/ul/li/span')
     html_content = elemento.get_attribute('outerHTML')
@@ -97,6 +99,9 @@ def extrato_bb():
 
     chrome.find_element_by_xpath('//*[@id="carousel1"]/div/div/img[2]').click()
 
+    time.sleep(2)
+    # Pegar a data de fechamento da fatura Smiles
+    chrome.find_element_by_xpath('//*[@id="faturasAtual"]/li[11]/a').click()
     time.sleep(2)
 
     elemento = chrome.find_element_by_xpath(
@@ -153,6 +158,10 @@ def extrato_bb():
 
     chrome.find_element_by_xpath('//*[@id="carousel1"]/div/div/img[4]').click()
 
+    time.sleep(2)
+
+    # PEgando a data de fechamento da fatura Elo Nanquimq
+    chrome.find_element_by_xpath('//*[@id="faturasAtual"]/li[11]/a').click()
     time.sleep(2)
 
     elemento = chrome.find_element_by_xpath(

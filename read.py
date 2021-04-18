@@ -14,12 +14,12 @@ fechamento_visa = lista_definitiva[3]
 fechamento_smiles = lista_definitiva[4]
 fechamento_nanquim = lista_definitiva[5]
 
-print(f'Fechamento da próxima fatura visa: {fechamento_visa}')
+print(f'Fechamento da próxima fatura Visa: {fechamento_visa}')
 print(f'Histórico de compras Visa: {historico_compras_visa}')
-print(f'Fechamento da próxima fatura smiles: {fechamento_smiles}')
-print(f'Histórico de compras Visa: {historico_compras_smiles}')
+print(f'Fechamento da próxima fatura Smiles: {fechamento_smiles}')
+print(f'Histórico de compras Smiles: {historico_compras_smiles}')
 print(f'Fechamento da próxima fatura Elo Nanquim: {fechamento_nanquim}')
-print(f'Histórico de compras Visa: {historico_compras_nanquim}')
+print(f'Histórico de compras Elo Nanquim: {historico_compras_nanquim}')
 
 dicionario_meses = {5: "api", 6: "api2"}
 
@@ -59,7 +59,6 @@ for gasto in historico_compras_nanquim:
     preço = str(f'{gasto[2]:.2f}').split('.')
     gasto[2] = "R$ " + preço[0] + "," + preço[1]
     valor_nanquim.append(gasto)
-# PAREI AQUI, LEVAR NOTE PARA CONTINUAR
 
 aba = int(fechamento_visa.split('/')[1])+1
 range = f'{dicionario_meses[aba]}!A2:C17'
