@@ -7,16 +7,18 @@ import pandas as pd
 import time 
 from pprint import pprint
 import credenciais
+from telegram.ext import Updater
+import telegram
 
 
 def extrato_bb():
 
-    option = Options()
-    # option.headless = True
-    chrome = webdriver.Chrome(options=option)
-    chrome.get('https://www2.bancobrasil.com.br/aapf/login.jsp')
+    url = 'https://www2.bancobrasil.com.br/aapf/login.html?1638208647003#/acesso-aapf-agencia-conta-1'
+    chrome = webdriver.Chrome("/home/serpro/development/google-sheet/Google-sheet/chromedriver")
+    chrome.get(url)
 
     time.sleep(10)
+    
 
     agencia = credenciais.agencia_bb
     conta = credenciais.conta_bb
@@ -45,7 +47,7 @@ def extrato_bb():
     # Seleciona o Cartão Visa Infinite
     chrome.find_element_by_xpath('//*[@id="carousel1"]/div/div/img[1]').click()
 
-    time.sleep(2)
+    time.sleep(3)
     # Extrair a data de fechamento da próxima fatura
     chrome.find_element_by_xpath('//*[@id="faturasAtual"]/li[11]/a').click()
     time.sleep(2)
@@ -54,7 +56,8 @@ def extrato_bb():
     html_content = elemento.get_attribute('outerHTML')
     soup = BeautifulSoup(html_content, 'html.parser')
     fechamento_fatura_visa = soup.get_text('\n')
-    time.sleep(2)
+    print(fechamento_fatura_visa)
+    time.sleep(5)
     # Clica em fatura atual para ver os histórico de compras recente
     chrome.find_element_by_xpath("//*[@id='faturasAtual']/li[12]").click()
 
@@ -67,7 +70,7 @@ def extrato_bb():
     visa = []
     try:
         elemento = chrome.find_element_by_xpath(
-            "//*[@id='fatura2']/div[9]//table")
+            "//*[@id='fatura2']/div[9]/table")
         html_content = elemento.get_attribute('outerHTML')
         # Método organiza as informações em html
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -89,78 +92,25 @@ def extrato_bb():
             lista.append(int(linha['Valor'])/100)
             visa.append(lista)
             lista = []
-    except Exception:
-        print('Nenhum dado encontrado no extrato do cartão Visa')
-
-    # Seleciona o Cartão Smiles
-    chrome.execute_script("window.scrollTo(0,0)")
-
-    time.sleep(3)
-
-    chrome.find_element_by_xpath('//*[@id="carousel1"]/div/div/img[2]').click()
-
-    time.sleep(2)
-    # Pegar a data de fechamento da fatura Smiles
-    chrome.find_element_by_xpath('//*[@id="faturasAtual"]/li[11]/a').click()
-    time.sleep(2)
-
-    elemento = chrome.find_element_by_xpath(
-        '//*[@id="fatura2"]/table/tbody/tr[4]/td/div/ul/li/span')
-    html_content = elemento.get_attribute('outerHTML')
-    soup = BeautifulSoup(html_content, 'html.parser')
-    fechamento_fatura_smiles = soup.get_text('\n')
-    time.sleep(2)
-
-    chrome.find_element_by_xpath("//*[@id='faturasAtual']/li[12]").click()
-
-    time.sleep(2)
-
-    chrome.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-
-    time.sleep(4)
-
-    smiles = []
-    try:
-        elemento = chrome.find_element_by_xpath(
-            "//*[@id='fatura2']/div[9]//table")
-        html_content = elemento.get_attribute('outerHTML')
-
-        soup = BeautifulSoup(html_content, 'html.parser')
-        table = soup.find(name='table')
-
-        extrato_full = pd.read_html(str(table))[0]
-        extrato = extrato_full[[0, 1, 2]]
-        extrato.columns = ['Data', 'Descrição', 'Valor']
-        extrato = extrato.drop([0, 1], axis=0)
-
-        historico_compras = {}
-        historico_compras['extrato'] = extrato.to_dict('records')
-
-        lista = []
-        smiles = []
-        for linha in historico_compras['extrato']:
-            lista.append(linha['Data'])
-            lista.append(linha['Descrição'])
-            lista.append(int(linha['Valor'])/100)
-            smiles.append(lista)
-            lista = []
-    except Exception:
-        print('Nenhum dado encontrado no extrato do cartão Smiles')
+    except Exception as err:
+        print(err)
 
     # Seleciona o Cartão Elo Nanquim
     chrome.execute_script("window.scrollTo(0,0)")
 
     time.sleep(2)
-    # Voltando para a imagem do cartão visa pra deixa a imagem do elo visível
-    chrome.find_element_by_xpath('//*[@id="carousel1"]/div/div/img[1]').click()
 
-    time.sleep(3)
-
-    chrome.find_element_by_xpath('//*[@id="carousel1"]/div/div/img[4]').click()
+    # Selecionar outro cartão para depois selecionar o Elo Nanquim
+    chrome.find_element_by_xpath('//*[@id="carousel1"]/div/div/img[2]').click()
 
     time.sleep(2)
 
-    # PEgando a data de fechamento da fatura Elo Nanquimq
+    # Selecionar cartão Elo Nanquim
+    chrome.find_element_by_xpath('//*[@id="carousel1"]/div/div/img[3]').click()
+
+    time.sleep(2)
+
+    # Pegando a data de fechamento da fatura Elo Nanquimq
     chrome.find_element_by_xpath('//*[@id="faturasAtual"]/li[11]/a').click()
     time.sleep(2)
 
@@ -175,7 +125,7 @@ def extrato_bb():
 
     time.sleep(2)
 
-    chrome.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+    # chrome.execute_script("window.scrollTo(0,document.body.scrollHeight)")
 
     time.sleep(4)
 
@@ -204,8 +154,8 @@ def extrato_bb():
             lista.append(int(linha['Valor'])/100)
             nanquim.append(lista)
             lista = []
-    except Exception:
-        print('Nenhum dado encontrado no extrato do cartão Elo')
+    except Exception as err:
+        print(err)
 
     # if visa:
     #     lista
@@ -214,10 +164,10 @@ def extrato_bb():
     # if nanquim:
     #     pprint(f'Extrato Nanquim: {nanquim}')
 
-    lista_definitiva = visa + smiles + nanquim
+    lista_definitiva = visa + nanquim
     chrome.close()
 
-    return visa, smiles, nanquim, fechamento_fatura_visa, fechamento_fatura_smiles, fechamento_fatura_elo
+    return visa, nanquim, fechamento_fatura_visa, fechamento_fatura_elo
 
 
 def extrato_caixa():
@@ -362,7 +312,6 @@ def extrato_caixa():
 def mensagem_bot_telegram(mensagem):
     import requests
     import urllib.parse
-    import credenciais
 
     # Ler msgs que estão sendo mandadas para o bot
     chat_id = credenciais.chat_id_telegram
@@ -374,3 +323,15 @@ def mensagem_bot_telegram(mensagem):
     resultado = requests.post(url_send)
 
     return resultado
+
+def telegram_bot(mensagem):
+
+    token = credenciais.token_telegram
+    chatid = credenciais.chat_id
+    updater = Updater(token=token, use_context=True)
+
+    updater.bot.send_message(chat_id=chatid, text=mensagem,
+                            parse_mode=telegram.ParseMode.MARKDOWN_V2)
+
+    return 'Mensagem Enviada!'
+
