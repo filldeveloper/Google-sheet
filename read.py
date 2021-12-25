@@ -124,6 +124,8 @@ for gasto in resultado_compra:
         mensagem_gasto = f'{gasto[1]} \- {gasto[-1]}'
         if "=" in mensagem_gasto:
             mensagem_gasto = mensagem_gasto.replace('=', '\=')
+        if "*" in mensagem_gasto:
+            mensagem_gasto = mensagem_gasto.replace('*', '\*')
         telegram_bot(mensagem_gasto)
 
         validador_msg = 1
@@ -155,6 +157,8 @@ for gasto in resultado_compra:
             mensagem_gasto = f'{gasto[1]} \- {gasto[-1]}'
             if "=" in mensagem_gasto:
                 mensagem_gasto = mensagem_gasto.replace('=', '\=')
+            if "*" in mensagem_gasto:
+                mensagem_gasto = mensagem_gasto.replace('*', '\*')
             telegram_bot(mensagem_gasto)
 
             validador_msg = 1
