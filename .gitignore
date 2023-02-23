@@ -1,2 +1,4 @@
 credenciais.py
 keys.json
+venv/
+__pycahce__/
