@@ -2,3 +2,4 @@ selenium
 bs4
 pandas
 lxml
+google-api-python-client
