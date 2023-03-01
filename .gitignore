@@ -2,3 +2,5 @@ credenciais.py
 keys.json
 venv/
 __pycahce__/
+.vscode/
+settings.json
