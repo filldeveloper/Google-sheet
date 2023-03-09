@@ -19,6 +19,7 @@ def extrato_bb():
     # options.add_argument('--headless')
     # options.add_argument('--disable-gpu')
     options.add_argument('--log-level=3')
+    options.add_argument('--disable-blink-features=AutomationControlled')
     url = 'https://www2.bancobrasil.com.br/aapf/login.html?1638208647003#/acesso-aapf-agencia-conta-1'
 
     chrome = webdriver.Chrome(
@@ -43,7 +44,7 @@ def extrato_bb():
 
     # Preencher o campo senha e apertar Enter
     chrome.find_element(By.ID,"senhaConta").send_keys(senha, Keys.ENTER)
-    sleep(8)
+    sleep(10)
 
     # Digita Cartões no campo de busca e aperta Enter
     chrome.find_element(By.ID,"acheFacil").send_keys("cartões", Keys.ENTER)
@@ -102,11 +103,22 @@ def extrato_bb():
         lista = []
         elo_nanquim = []
         for linha in historico_compras['extrato']:
-            lista.append(linha['Data'])
-            lista.append(linha['Descrição'])
-            lista.append(int(linha['Valor'])/100)
-            elo_nanquim.append(lista)
-            lista = []
+
+            if 'PARC=' in linha['Descrição']:
+                xparcelas = int(linha['Descrição'][7])
+                lista.append(linha['Data'])
+                lista.append(linha['Descrição'][8:-1])
+                lista.append(int(linha['Valor'])/100)
+                lista.append(xparcelas)
+                elo_nanquim.append(lista)
+                lista = []
+            else:
+                lista.append(linha['Data'])
+                lista.append(linha['Descrição'])
+                lista.append(int(linha['Valor'])/100)
+                lista.append(0)
+                elo_nanquim.append(lista)
+                lista = []
     except Exception as err:
         print(err)
     
@@ -145,29 +157,49 @@ def extrato_bb():
         visa = []
         for linha in historico_compras['extrato']:
 
-            if linha['Valor'] == '16.687,00':
-                continue
-            
-            lista.append(linha['Data'])
-            lista.append(linha['Descrição'])
-            lista.append(int(linha['Valor'])/100)
-            visa.append(lista)
-            lista = []
+            if 'PARC=' in linha['Descrição']:
+                xparcelas = int(linha['Descrição'][7])
+                lista.append(linha['Data'])
+                lista.append(linha['Descrição'][8:-1])
+                lista.append(int(linha['Valor'])/100)
+                lista.append(xparcelas)
+                visa.append(lista)
+                lista = []
+            else:
+                lista.append(linha['Data'])
+                lista.append(linha['Descrição'])
+                lista.append(int(linha['Valor'])/100)
+                lista.append(0)
+                visa.append(lista)
+                lista = []
     except Exception as err:
         print(err)
 
     lista_definitiva = visa + elo_nanquim
 
+    chrome.close()
     return visa, elo_nanquim, fechamento_fatura_elo, chrome
 
 
-def extrato_caixa(chrome):
+def extrato_caixa():
+    options = webdriver.ChromeOptions()
+    # options.add_argument('--no-sandbox')
+    # options.add_argument('--headless')
+    # options.add_argument('--disable-gpu')
+    options.add_argument('--log-level=3')
     url = 'https://internetbanking.caixa.gov.br/sinbc/#!nb/login'
+
+    chrome = webdriver.Chrome(
+        options=options,
+        service=ChromeService(ChromeDriverManager().install())
+        )
     chrome.get(url)
     sleep(7)
 
     usuario = credenciais.usuario_caixa
-    chrome.find_element(By.ID,"nomeUsuario").send_keys(usuario)
+    for letra in usuario:
+        chrome.find_element(By.ID,"nomeUsuario").send_keys(letra)
+        sleep(0.3)
     chrome.find_element(By.NAME,"btnLogin").click()
     sleep(4)
 
@@ -193,29 +225,29 @@ def extrato_caixa(chrome):
     chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[7]}]').click()
     sleep(1)
     chrome.find_element(By.ID,'btnConfirmar').click()
-    sleep(8)
+    sleep(9)
 
     # Caso exista o popup de promoção, clicar em fechar
     try:
         chrome.find_element(By.NAME,'btnPromoFechar').click()
     except Exception:
         print("Não possuía o popup de promoção")
-    sleep(3)
+    sleep(4)
 
     # Clicando em cartões na home
     chrome.find_element(
         By.XPATH,
         '//*[@id="carrosselLista"]/li[2]/div[1]/div').click()
-    sleep(3)
+    sleep(4)
 
     # Clicando em Faturas para pegar a data de fechamento
     chrome.find_element(
         By.XPATH,
         '//*[@id="submenu"]/div[3]/ul/li[2]/a').click()
-    sleep(3)
+    sleep(4)
 
     chrome.find_element(By.XPATH,'//*[@id="linhaTabelaInicio"]/tr[2]').click()
-    sleep(2)
+    sleep(3)
 
     elemento = chrome.find_element(By.XPATH,'//*[@id="tb_list_Inicio"]')
     html_content = elemento.get_attribute('outerHTML')
@@ -231,23 +263,23 @@ def extrato_caixa(chrome):
     chrome.find_element(
         By.XPATH,
         '//*[@id="home"]/div[1]/div[2]/div[2]/div[2]/div/div[1]/div').click()
-    sleep(2)
+    sleep(3)
 
     # Clicando em cartões
     chrome.find_element(
         By.XPATH,
         '//*[@id="carrosselLista"]/li[2]/div[1]/div').click()
-    sleep(1)
+    sleep(2)
 
     # Histórico de compras
     chrome.find_element(
         By.XPATH,
         '//*[@id="submenu"]/div[3]/ul/li[3]/a').click()
-    sleep(3)
+    sleep(4)
 
     # Rolar página para baixo e carregar o HTML caso esteja oculto ainda
     chrome.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-    sleep(1)
+    sleep(2)
 
     elemento = chrome.find_element(By.XPATH,'//*[@id="tb_list_Inicio"]')
     html_content = elemento.get_attribute('outerHTML')
@@ -278,12 +310,23 @@ def extrato_caixa(chrome):
         description = description[22:-1]
         lista.append(description)
 
+        # Condição que verifica se a compra foi parcelada, se for envia o número de parcelas
         valor = linha[1].split('R$ ')
-        valor = valor[1].split(' ')
-        valor = 'R$ ' + valor[0]
-        lista.append(valor)
-        caixa.append(lista)
-        lista = []
+        if 'Parcelado em' in valor[0]:
+            valor_total = valor[1].split(' ')[0]
+            xparcelas = int(valor[0].split(' ')[2])
+            lista.append(valor_total)
+            lista.append(xparcelas)
+            caixa.append(lista)
+            lista = []
+        # Se não for parcelada envia uma flag 0
+        else:
+            valor = valor[1].split(' ')[0]
+            xparcelas = 0
+            lista.append(valor)
+            lista.append(xparcelas)
+            caixa.append(lista)
+            lista = []
     
     chrome.close()
 

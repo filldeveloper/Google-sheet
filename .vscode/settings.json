@@ -8,6 +8,7 @@
         "googleapiclient",
         "googlesheet",
         "mktime",
-        "usuario"
+        "usuario",
+        "xparcelas"
     ]
 }
