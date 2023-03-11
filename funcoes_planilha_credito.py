@@ -103,8 +103,19 @@ def extrato_bb():
         lista = []
         elo_nanquim = []
         for linha in historico_compras['extrato']:
-
-            if 'PARC=' in linha['Descrição']:
+            valor = linha['Valor']
+            # Condição para quando a compra for maior que um mil reais
+            if '.' in valor and ',' in valor:
+                valor_mil = valor.replace('.', '')
+                valor_mil = float(valor_mil.replace(',','.'))
+                lista.append(linha['Data'])
+                lista.append(linha['Descrição'])
+                lista.append(valor_mil)
+                lista.append(0)
+                elo_nanquim.append(lista)
+                lista = []
+            # Condição caso a compra seja parcelada
+            elif 'PARC=' in linha['Descrição']:
                 xparcelas = int(linha['Descrição'][7])
                 lista.append(linha['Data'])
                 lista.append(linha['Descrição'][8:-1])
@@ -122,16 +133,16 @@ def extrato_bb():
     except Exception as err:
         print(err)
     
-    # Seleciona o Cartão Smiles Visa Infinite
+    # Rolar página para cima
     chrome.execute_script("window.scrollTo(0,0)")
     sleep(2)
 
-    # Selecionar cartão Elo Nanquim
+    # Selecionar cartão Smiles Visa Infinite
     chrome.find_element(By.XPATH,'//*[@id="carousel1"]/div/div/img[3]').click()
     sleep(2)
 
-    chrome.find_element(By.CLASS_NAME,"inactive").click()
-    sleep(2)
+    # chrome.find_element(By.CLASS_NAME,"inactive").click()
+    # sleep(2)
 
     chrome.execute_script("window.scrollTo(0,document.body.scrollHeight)")
     sleep(4)
@@ -156,8 +167,19 @@ def extrato_bb():
         lista = []
         visa = []
         for linha in historico_compras['extrato']:
-
-            if 'PARC=' in linha['Descrição']:
+            valor = linha['Valor']
+            # Condição para quando a compra for maior que um mil reais
+            if '.' in valor and ',' in valor:
+                valor_mil = valor.replace('.', '')
+                valor_mil = float(valor_mil.replace(',','.'))
+                lista.append(linha['Data'])
+                lista.append(linha['Descrição'])
+                lista.append(valor_mil)
+                lista.append(0)
+                visa.append(lista)
+                lista = []
+            # Condição caso a compra seja parcelada
+            elif 'PARC=' in linha['Descrição']:
                 xparcelas = int(linha['Descrição'][7])
                 lista.append(linha['Data'])
                 lista.append(linha['Descrição'][8:-1])

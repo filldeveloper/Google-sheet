@@ -258,6 +258,11 @@ for gasto in historico_compras:
 
         else: # Se a flag de gasto parcelado vier 0
             valor_gasto = 'R$ ' + ("{:.2f}".format(gasto[2])).replace('.', ',')
+
+            # Condição para corrigir a inserção de valores maiores que um mil
+            if len(valor_gasto) > 9:
+                valor_gasto = valor_gasto[:4] + '.' + valor_gasto[4:]
+
             parcela = [gasto[0], gasto[1], valor_gasto]
             # Pegando todos os gastos armazenados e determinando a próxima linha vazia
             range = f'{dicionario_meses[mes_gasto+1]}!H2:J100'
@@ -306,6 +311,11 @@ for gasto in historico_compras:
                 count += 1
         else: # Se a flag de gasto parcelado vier 0
             valor_gasto = 'R$ ' + ("{:.2f}".format(gasto[2])).replace('.', ',')
+
+            # Condição para corrigir a inserção de valores maiores que um mil
+            if len(valor_gasto) > 9:
+                valor_gasto = valor_gasto[:4] + '.' + valor_gasto[4:]
+                
             parcela = [gasto[0], gasto[1], valor_gasto]
             # Pegando todos os gastos armazenados e determinando a próxima linha vazia
             range = f'{dicionario_meses[mes_gasto+2]}!H2:J100'
