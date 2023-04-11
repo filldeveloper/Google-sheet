@@ -10,6 +10,8 @@ import pandas as pd
 from time import sleep
 from pprint import pprint
 import credenciais
+import requests
+import json
 
 
 def extrato_bb():
@@ -44,7 +46,7 @@ def extrato_bb():
 
     # Preencher o campo senha e apertar Enter
     chrome.find_element(By.ID,"senhaConta").send_keys(senha, Keys.ENTER)
-    sleep(10)
+    sleep(15)
 
     # Digita Cartões no campo de busca e aperta Enter
     chrome.find_element(By.ID,"acheFacil").send_keys("cartões", Keys.ENTER)
@@ -75,7 +77,7 @@ def extrato_bb():
     sleep(5)
 
     # Clica em fatura atual para ver os histórico de compras recente
-    chrome.find_element(By.XPATH,"//*[@id='faturasAtual']/li[12]").click()
+    chrome.find_element(By.LINK_TEXT,"Próxima Fatura").click()
     sleep(2)
 
     # Rola a página para baixo
@@ -141,8 +143,9 @@ def extrato_bb():
     chrome.find_element(By.XPATH,'//*[@id="carousel1"]/div/div/img[3]').click()
     sleep(2)
 
-    # chrome.find_element(By.CLASS_NAME,"inactive").click()
-    # sleep(2)
+    # Clica em fatura atual para ver os histórico de compras recente
+    chrome.find_element(By.LINK_TEXT,"Próxima Fatura").click()
+    sleep(2)
 
     chrome.execute_script("window.scrollTo(0,document.body.scrollHeight)")
     sleep(4)
@@ -354,3 +357,26 @@ def extrato_caixa():
 
 
     return caixa, data_definitiva
+
+
+def msg_whatsapp(mensagem):
+    PHONE_ID = credenciais.PHONE_ID
+    TOKEN = credenciais.TOKEN
+    NUMBER = credenciais.NUMBER
+    MESSAGE = 'Teste'
+
+    URL = "https://graph.facebook.com/v16.0/"+PHONE_ID+"/messages"
+    headers = {
+        "Authorization": "Bearer "+TOKEN, 
+        "Content-Type": "application/json"
+    }
+    data = { 
+        "messaging_product": "whatsapp", 
+        "to": NUMBER, 
+        "type": "text",
+        "text": json.dumps({ "preview_url": False, "body": MESSAGE}) 
+    }
+    response = requests.post(URL, headers=headers, data=data)
+    response_json = response.json()
+    return response_json
+

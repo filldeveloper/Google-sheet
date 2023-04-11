@@ -4,3 +4,4 @@ venv/
 __pycahce__/
 .vscode/
 settings.json
+zapconfig.cfg
