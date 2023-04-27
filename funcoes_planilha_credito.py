@@ -182,7 +182,7 @@ def extrato_bb():
                 visa.append(lista)
                 lista = []
             # Condição caso a compra seja parcelada
-            elif 'PARC=' in linha['Descrição']:
+            elif 'PARC=' in linha['Descrição'] or 'parc=' in linha['Descrição']:
                 xparcelas = int(linha['Descrição'][7])
                 lista.append(linha['Data'])
                 lista.append(linha['Descrição'][8:-1])
