@@ -2,6 +2,8 @@ import smtplib
 import ssl
 import email.message
 
+import config
+
 msg = email.message.Message()
 msg['Subject'] = "Parem de me cobrar"
 body = f"""
@@ -12,9 +14,9 @@ body = f"""
 <p>Atenciosamente</p>
 """
 
-msg['From'] = 'felipebobsponja@gmail.com'
-msg['To'] = 'boleto@grupocobrafix.com.br'
-password = 'serpro10'
+msg['From'] = config.exigir('GMAIL_USER')
+msg['To'] = config.exigir('EMAIL_DESTINATARIO')
+password = config.exigir('GMAIL_APP_PASSWORD')
 msg.add_header('Content-Type', 'text/html')
 msg.set_payload(body)
 
@@ -23,6 +25,5 @@ with smtplib.SMTP('smtp.gmail.com', 587) as conexao:
     conexao.ehlo()
     conexao.starttls(context=context)
     conexao.login(msg['From'], password)
-    while True:
-        conexao.sendmail(msg['From'], msg['To'],
-                         msg.as_string().encode('utf-8'))
+    conexao.sendmail(msg['From'], msg['To'],
+                     msg.as_string().encode('utf-8'))

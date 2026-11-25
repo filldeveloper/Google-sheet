@@ -1,7 +1,7 @@
 import os
 import logging
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
-from credenciais import token_bot_zabbix
+import config
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import Filters
@@ -44,8 +44,7 @@ def unknown(update, context):
 
 
 
-token = token_bot_zabbix
-# os.getenv('TOKEN_TG')
+token = config.exigir('TELEGRAM_TOKEN')
 
 
 def main():

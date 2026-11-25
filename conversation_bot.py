@@ -1,5 +1,7 @@
 import logging
 
+import config
+
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     Updater,
@@ -124,7 +126,7 @@ def cancel(update: Update, _: CallbackContext):
 
     return ConversationHandler.END
 
-token = "1784430746:AAFp0MUPY-i6nk085y16AwmowXEE4JQ16X8"
+token = config.exigir('TELEGRAM_TOKEN')
 
 def main():
     # Create the Updater and pass it your bot's token.
