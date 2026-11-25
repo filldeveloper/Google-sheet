@@ -56,8 +56,9 @@ python pluggy_cartoes.py --gravar   # grava na planilha
 
 ### Rodar todo dia (GitHub Actions)
 
-O workflow `.github/workflows/cartoes-diario.yml` roda `python pluggy_cartoes.py --gravar` todo dia
-às 7h (horário de Brasília). Ele precisa de 4 Secrets, cadastrados em **Settings → Secrets and
+O workflow `.github/workflows/cartoes-diario.yml` roda
+`python pluggy_cartoes.py --a-partir-de 12/2026 --gravar` todo dia às 7h (horário de Brasília).
+O mês inicial fica em `A_PARTIR_DE`, no próprio workflow. Ele precisa de 4 Secrets, cadastrados em **Settings → Secrets and
 variables → Actions → New repository secret**:
 
 | Secret | Conteúdo |

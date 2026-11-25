@@ -46,11 +46,13 @@ jobs:
           CONFIG_CARTOES: ${{ runner.temp }}/config_cartoes.json
           # No agendamento grava sempre; na execução manual, só se a caixa "gravar" for marcada.
           GRAVAR: ${{ github.event_name == 'schedule' || inputs.gravar }}
+          # Não mexe nas abas anteriores a esta (novembro de 2026 foi preenchido à mão).
+          A_PARTIR_DE: "12/2026"
         run: |
           if [ "$GRAVAR" = "true" ]; then
-            python pluggy_cartoes.py --gravar
+            python pluggy_cartoes.py --a-partir-de "$A_PARTIR_DE" --gravar
           else
-            python pluggy_cartoes.py
+            python pluggy_cartoes.py --a-partir-de "$A_PARTIR_DE"
           fi
 
       - name: Apagar arquivos de credenciais
