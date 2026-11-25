@@ -5,3 +5,6 @@ __pycahce__/
 .vscode/
 settings.json
 zapconfig.cfg
+config_cartoes.json
+.env
+__pycache__/

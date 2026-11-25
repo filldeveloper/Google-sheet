@@ -4,3 +4,5 @@ pandas
 lxml
 google-api-python-client
 webdriver-manager
+requests
+google-auth
