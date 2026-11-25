@@ -255,8 +255,11 @@ def chave(data_compra, valor):
 def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje):
     fech = Fechamentos(planilha, cartao)
     contas = pluggy.contas_credito(cartao["item_id"])
-    if cartao.get("account_id"):
-        contas = [c for c in contas if c["id"] == cartao["account_id"]]
+    escolhidas = cartao.get("account_ids") or cartao.get("account_id") or []
+    if isinstance(escolhidas, str):
+        escolhidas = [escolhidas]
+    if escolhidas:
+        contas = [c for c in contas if c["id"] in escolhidas]
     if not contas:
         print(f"[{cartao['nome']}] nenhuma conta de cartão encontrada no item.")
         return

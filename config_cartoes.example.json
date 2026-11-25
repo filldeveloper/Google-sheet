@@ -7,7 +7,7 @@
     {
       "nome": "Nubank",
       "item_id": "COLE_AQUI_O_ITEM_ID_DO_NUBANK",
-      "account_id": "",
+      "account_ids": [],
       "colunas": "B:D",
       "celula_fechamento": "F5",
       "dia_fechamento": 24
@@ -15,7 +15,7 @@
     {
       "nome": "Banco do Brasil",
       "item_id": "COLE_AQUI_O_ITEM_ID_DO_BB",
-      "account_id": "",
+      "account_ids": [],
       "colunas": "H:J",
       "celula_fechamento": "F11",
       "dia_fechamento": 26

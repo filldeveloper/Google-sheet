@@ -26,7 +26,8 @@ Faturas antigas (mais de uma aba antes da fatura aberta) não são alteradas.
    (o secret vale 180 dias).
 2. Copie `config_cartoes.example.json` para `config_cartoes.json` e cole o `item_id` de cada banco
    (aparece no dashboard da Pluggy). Rode `python pluggy_cartoes.py --listar-contas` para ver os
-   cartões de cada item; se um item tiver mais de um cartão, preencha `account_id`.
+   cartões de cada item; se um item tiver mais de um cartão, coloque em `account_ids` só os que entram no bloco
+   (vazio = todos os cartões do item).
 3. Compartilhe as planilhas de cada ano (como editor) com o e-mail da conta de serviço do Google.
 4. Defina as variáveis de ambiente:
 
