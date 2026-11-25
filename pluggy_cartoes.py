@@ -143,12 +143,26 @@ class Fechamentos:
         if chave not in self.cache:
             texto = self.planilha.ler_celula(ano, mes, self.cartao["celula_fechamento"])
             data = parse_data_planilha(texto, ano) if texto else None
+            if data is not None and not self._plausivel(data, ano, mes):
+                # Data velha copiada de outro ano (ex.: 24/12/2024 na aba
+                # Janeiro de 2027). Ignora e usa o dia padrão.
+                print(f"[{self.cartao['nome']}] {MESES[mes - 1]} {ano}: fechamento "
+                      f"{texto} na planilha não bate com a aba, usando o dia "
+                      f"{self.cartao['dia_fechamento']}.")
+                data = None
             if data is None:
                 a, m = proximo_mes(ano, mes, -1)
                 dia = min(self.cartao["dia_fechamento"], 28)
                 data = date(a, m, dia)
             self.cache[chave] = data
         return self.cache[chave]
+
+    @staticmethod
+    def _plausivel(data, ano, mes):
+        """O fechamento da aba (ano, mes) tem que cair no mês anterior (ou na 1ª semana do mês)."""
+        anterior = proximo_mes(ano, mes, -1)
+        return ((data.year, data.month) == anterior
+                or ((data.year, data.month) == (ano, mes) and data.day <= 7))
 
     def aba_da_compra(self, d):
         """Primeira aba cujo fechamento é depois da data da compra.
@@ -328,9 +342,6 @@ def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de=None, 
                     por_aba[aba].append((d, desc, v))
                 elif serie not in parcelas or (i == 0 and parcelas[serie][1] != 0):
                     parcelas[serie] = ((aba, d, desc, v), i)
-        if sem_fatura:
-            print(f"[{cartao['nome']}] {sem_fatura} compra(s) sem fatura na Pluggy "
-                  "(fatura aberta): aba calculada pela data de fechamento.")
 
     # Todas as parcelas de uma série com a mesma data (a mais antiga vista).
     primeira = {}
