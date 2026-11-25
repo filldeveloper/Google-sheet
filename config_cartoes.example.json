@@ -1,0 +1,24 @@
+{
+  "planilhas_por_ano": {
+    "2026": "1knqE2ThjbkmTcliv_PzU-VYYxeJ1QjsSm9Ri8D7hC80",
+    "2027": "1I4uTB3J80KwmpGN5rM8nsHlEQBfKzK6DcMp7i7a0HWE"
+  },
+  "cartoes": [
+    {
+      "nome": "Nubank",
+      "item_id": "COLE_AQUI_O_ITEM_ID_DO_NUBANK",
+      "account_id": "",
+      "colunas": "B:D",
+      "celula_fechamento": "F5",
+      "dia_fechamento": 24
+    },
+    {
+      "nome": "Banco do Brasil",
+      "item_id": "COLE_AQUI_O_ITEM_ID_DO_BB",
+      "account_id": "",
+      "colunas": "H:J",
+      "celula_fechamento": "F11",
+      "dia_fechamento": 26
+    }
+  ]
+}
