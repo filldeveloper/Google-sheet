@@ -13,12 +13,18 @@ vai para a aba seguinte. A data de fechamento vem da célula de fechamento da ab
 Nubank, F11 para o BB). Se ela estiver vazia, o script usa o `dia_fechamento` do config, e
 preenche a célula com a data que a Pluggy informar para a fatura aberta.
 
-Compras parceladas: cada parcela vai para a aba correspondente, com "k/n" na descrição.
+Quando a Pluggy informa a fatura da compra, a aba é o mês do vencimento dessa fatura (vale também
+para as parcelas). As datas de fechamento só são usadas para a fatura ainda aberta.
 
-Para não duplicar, um gasto é reconhecido pela data da compra (dia/mês) e pelo valor. A
+Compras parceladas: cada parcela vai para a aba correspondente, com "k/n" na descrição, e as
+parcelas futuras já são lançadas nas abas seguintes.
+
+Para não duplicar, um gasto é reconhecido pela data da compra (dia/mês, com 1 dia de folga) e pelo
+valor (com 1 centavo de folga). A
 descrição não entra na comparação, então você pode renomear os gastos na planilha à vontade.
 
-Faturas antigas (mais de uma aba antes da fatura aberta) não são alteradas.
+Por padrão, só mexe da fatura que acabou de fechar em diante. Use `--a-partir-de 01/2027` para
+começar de uma aba específica (útil para não mexer em abas que você já preencheu à mão).
 
 ### Configuração
 

@@ -17,6 +17,7 @@ Variáveis de ambiente:
 """
 
 import argparse
+import html
 import json
 import os
 import re
@@ -55,6 +56,15 @@ class Pluggy:
     def contas_credito(self, item_id):
         return self.get("/accounts", itemId=item_id, type="CREDIT")["results"]
 
+    def faturas(self, account_id):
+        """{bill_id: data de vencimento} das faturas da conta."""
+        try:
+            dados = self.get("/bills", accountId=account_id, pageSize=500)
+        except requests.HTTPError:
+            return {}
+        return {b["id"]: data_local(b["dueDate"])
+                for b in dados.get("results", []) if b.get("dueDate")}
+
     def transacoes(self, account_id, desde):
         """Todas as transações da conta a partir de `desde` (cursor da v2)."""
         dados = self.get("/v2/transactions", accountId=account_id,
@@ -78,11 +88,12 @@ def proximo_mes(ano, mes, n=1):
 
 
 def data_local(iso):
-    """Converte o ISO8601 UTC da Pluggy para a data no horário de Brasília."""
-    dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(BRT).date()
+    """Data (sem hora) de um campo da Pluggy.
+
+    Usa a data como veio. Converter de UTC para Brasília joga as compras
+    gravadas como 00:00 UTC para o dia anterior.
+    """
+    return date.fromisoformat(str(iso)[:10])
 
 
 def parse_data_planilha(texto, ano_padrao):
@@ -216,43 +227,68 @@ def normalizar(texto):
     return re.sub(r"\s+", " ", t).strip()
 
 
-def linhas_da_transacao(t, fechamentos):
-    """Gera (aba, data_compra, descricao, valor) para a compra e parcelas futuras."""
+PARC_RE = re.compile(r"\s*\bPARC(?:ELA)?\.?\s*(\d{1,2})\s*/\s*(\d{1,2})\b", re.I)
+FIM_RE = re.compile(r"\s+(\d{1,2})\s*/\s*(\d{1,2})\s*$")
+
+
+def limpar_descricao(texto):
+    """Tira o 'PARC 09/10' do meio da descrição e devolve (descricao, k, n)."""
+    t = normalizar(html.unescape(texto))
+    k = n = None
+    m = PARC_RE.search(t) or FIM_RE.search(t)
+    if m:
+        k, n = int(m[1]), int(m[2])
+        t = (t[:m.start()] + t[m.end():]).strip()
+    return re.sub(r"\s+", " ", t), k, n
+
+
+def linhas_da_transacao(t, fechamentos, faturas):
+    """Gera (aba, data_compra, descricao, valor, serie) da compra e das parcelas futuras.
+
+    A aba vem da fatura em que o banco lançou a compra (mês do vencimento).
+    Sem fatura (fatura ainda aberta), usa a data da transação e o fechamento.
+    """
     valor = round(float(t["amount"]), 2)
     if valor <= 0:
         return []  # pagamento de fatura, estorno ou crédito
 
     meta = t.get("creditCardMetadata") or {}
+    data_tx = data_local(t["date"])
     data_compra = data_local(meta.get("purchaseDate") or t["date"])
-    parcela = int(meta.get("installmentNumber") or 1)
-    total_parcelas = int(meta.get("totalInstallments") or 1)
-    descricao = normalizar(t.get("description") or t.get("descriptionRaw") or "Compra")
-    # Tira um "3/10" que o banco já tenha posto na descrição.
-    descricao = re.sub(r"\s*(?:parc(?:ela)?\.?\s*)?\d{1,2}\s*/\s*\d{1,2}\s*$", "",
-                       descricao, flags=re.I)
+    descricao, k, n = limpar_descricao(t.get("description") or t.get("descriptionRaw") or "Compra")
+    if not n:
+        k = int(meta.get("installmentNumber") or 1)
+        n = int(meta.get("totalInstallments") or 1)
 
-    ano, mes = fechamentos.aba_da_compra(data_compra)
-    linhas = []
-    if total_parcelas <= 1:
-        linhas.append(((ano, mes), data_compra, descricao, valor))
+    vencimento = faturas.get(meta.get("billId"))
+    if vencimento:
+        aba = (vencimento.year, vencimento.month)
     else:
-        # A 1ª parcela cai na aba da compra; a k-ésima, k-1 abas depois.
-        for k in range(parcela, total_parcelas + 1):
-            aba = proximo_mes(ano, mes, k - 1)
-            linhas.append((aba, data_compra, f"{descricao} {k}/{total_parcelas}", valor))
-    return linhas
+        aba = fechamentos.aba_da_compra(data_tx if n > 1 else data_compra)
+
+    if n <= 1:
+        return [(aba, data_compra, descricao, valor, None)]
+    serie = (descricao.lower(), data_compra, n, valor)
+    # Esta parcela e as próximas, uma aba depois da outra.
+    return [(proximo_mes(*aba, j - k), data_compra, f"{descricao} {j}/{n}", valor, (serie, j))
+            for j in range(k, n + 1)]
 
 
-def chave(data_compra, valor):
-    """Identifica um gasto pela data (dia/mês) e valor.
+def ja_existe(ja_tem, d, v):
+    """Procura um gasto igual na planilha: mesmo valor (até 1 centavo) e data com até 1 dia de diferença.
 
     A descrição fica de fora de propósito: você costuma renomear os gastos na
     planilha, e isso não pode gerar duplicata.
     """
-    return (data_compra.day, data_compra.month, round(valor, 2))
+    for dd in (d, d - timedelta(days=1), d + timedelta(days=1)):
+        for vv in (v, round(v - 0.01, 2), round(v + 0.01, 2)):
+            if ja_tem[(dd.day, dd.month, vv)] > 0:
+                ja_tem[(dd.day, dd.month, vv)] -= 1
+                return True
+    return False
 
 
-def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje):
+def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de=None):
     fech = Fechamentos(planilha, cartao)
     contas = pluggy.contas_credito(cartao["item_id"])
     escolhidas = cartao.get("account_ids") or cartao.get("account_id") or []
@@ -265,26 +301,35 @@ def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje):
         return
 
     por_aba = defaultdict(list)
-    parcelas_vistas = set()
     for conta in contas:
+        faturas = pluggy.faturas(conta["id"])
+        # Uma série de parcelas pode vir várias vezes (uma por fatura). Para
+        # cada parcela, vale a que veio da fatura real, não a projetada.
+        parcelas = {}
+        sem_fatura = 0
         for t in pluggy.transacoes(conta["id"], desde):
-            for aba, d, desc, v in linhas_da_transacao(t, fech):
-                if re.search(r" \d+/\d+$", desc):
-                    # A Pluggy pode mandar a 1ª parcela e também as futuras
-                    # (pendentes). Cada parcela entra uma vez só.
-                    if (aba, d, desc, v) in parcelas_vistas:
-                        continue
-                    parcelas_vistas.add((aba, d, desc, v))
-                por_aba[aba].append((d, desc, v))
+            if float(t["amount"]) > 0 and (t.get("creditCardMetadata") or {}).get("billId") not in faturas:
+                sem_fatura += 1
+            for i, (aba, d, desc, v, serie) in enumerate(linhas_da_transacao(t, fech, faturas)):
+                if serie is None:
+                    por_aba[aba].append((d, desc, v))
+                elif serie not in parcelas or (i == 0 and parcelas[serie][1] != 0):
+                    parcelas[serie] = ((aba, d, desc, v), i)
+        if sem_fatura:
+            print(f"[{cartao['nome']}] {sem_fatura} compra(s) sem fatura na Pluggy "
+                  "(fatura aberta): aba calculada pela data de fechamento.")
+        for (aba, d, desc, v), _ in parcelas.values():
+            por_aba[aba].append((d, desc, v))
 
-    aba_atual = fech.aba_da_compra(hoje)
+    if a_partir_de is None:
+        aba_atual = fech.aba_da_compra(hoje)
+        a_partir_de = proximo_mes(*aba_atual, -1)
     for (ano, mes) in sorted(por_aba):
         nome_aba = f"{MESES[mes - 1]} {ano}"
+        if (ano, mes) < a_partir_de:
+            continue
         if not planilha.tem_ano(ano):
             print(f"[{cartao['nome']}] {nome_aba}: sem planilha para {ano} no config, pulando.")
-            continue
-        if (ano, mes) < proximo_mes(*aba_atual, -1) and not cartao.get("reescrever_passado"):
-            # Fatura já fechada e paga: não mexe no que você já conferiu.
             continue
 
         existentes = planilha.ler_bloco(ano, mes, cartao["colunas"])
@@ -293,15 +338,12 @@ def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje):
             d = parse_data_planilha(d_txt, ano)
             v = parse_valor(v_txt)
             if d and v is not None:
-                ja_tem[chave(d, v)] += 1
+                ja_tem[(d.day, d.month, v)] += 1
 
         novas = []
         for d, desc, v in sorted(por_aba[(ano, mes)]):
-            k = chave(d, v)
-            if ja_tem[k] > 0:
-                ja_tem[k] -= 1
-                continue
-            novas.append([d.strftime("%d/%m/%Y"), desc, v])
+            if not ja_existe(ja_tem, d, v):
+                novas.append([d.strftime("%d/%m/%Y"), desc, v])
 
         if not novas:
             print(f"[{cartao['nome']}] {nome_aba}: nada novo.")
@@ -337,6 +379,9 @@ def main():
                     help="grava na planilha (sem isso, só mostra o que faria)")
     ap.add_argument("--listar-contas", action="store_true",
                     help="lista os cartões de cada item_id do config e sai")
+    ap.add_argument("--a-partir-de", metavar="MM/AAAA",
+                    help="só mexe nas abas a partir deste mês (ex.: 01/2027). "
+                         "Padrão: a fatura que acabou de fechar e as seguintes")
     ap.add_argument("--dias", type=int, default=75,
                     help="quantos dias para trás buscar (padrão 75)")
     args = ap.parse_args()
@@ -363,8 +408,12 @@ def main():
                         gravar=args.gravar)
     hoje = datetime.now(BRT).date()
     desde = hoje - timedelta(days=args.dias)
+    a_partir_de = None
+    if args.a_partir_de:
+        m, a = args.a_partir_de.split("/")
+        a_partir_de = (int(a), int(m))
     for cartao in config["cartoes"]:
-        sincronizar_cartao(pluggy, planilha, cartao, desde, hoje)
+        sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de)
 
 
 if __name__ == "__main__":
