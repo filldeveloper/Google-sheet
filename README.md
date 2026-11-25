@@ -54,6 +54,23 @@ python pluggy_cartoes.py            # modo teste: só mostra o que seria gravado
 python pluggy_cartoes.py --gravar   # grava na planilha
 ```
 
+### Rodar todo dia (GitHub Actions)
+
+O workflow `.github/workflows/cartoes-diario.yml` roda `python pluggy_cartoes.py --gravar` todo dia
+às 7h (horário de Brasília). Ele precisa de 4 Secrets, cadastrados em **Settings → Secrets and
+variables → Actions → New repository secret**:
+
+| Secret | Conteúdo |
+| --- | --- |
+| `PLUGGY_CLIENT_ID` | o `client_id` da Pluggy |
+| `PLUGGY_CLIENT_SECRET` | o `client_secret` da Pluggy (vence em 180 dias; atualize aqui quando trocar) |
+| `GOOGLE_CREDENTIALS_JSON` | o conteúdo inteiro do JSON da conta de serviço (`keys.json`) |
+| `CONFIG_CARTOES_JSON` | o conteúdo inteiro do seu `config_cartoes.json` |
+
+Para testar, abra a aba **Actions**, escolha "Preencher planilha de cartões" e clique em
+**Run workflow**. Com a caixa "gravar" desmarcada, ele só mostra no log o que seria gravado.
+Quando uma execução falha, o GitHub manda e-mail.
+
 ## Scripts antigos
 
 `read.py` e `funcoes_planilha_credito.py` faziam scraping da Caixa e do BB com Selenium e não

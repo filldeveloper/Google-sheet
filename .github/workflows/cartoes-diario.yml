@@ -1,0 +1,58 @@
+name: Preencher planilha de cartões
+
+on:
+  schedule:
+    # Todo dia às 10:00 UTC (7:00 no horário de Brasília). O GitHub pode atrasar alguns minutos.
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+    inputs:
+      gravar:
+        description: "Gravar na planilha? (desmarcado = só mostra o que seria gravado)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: cartoes
+  cancel-in-progress: false
+
+jobs:
+  preencher:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install requests google-auth google-api-python-client
+
+      - name: Criar arquivos de credenciais
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+          CONFIG_CARTOES_JSON: ${{ secrets.CONFIG_CARTOES_JSON }}
+        run: |
+          printf '%s' "$GOOGLE_CREDENTIALS_JSON" > "$RUNNER_TEMP/keys.json"
+          printf '%s' "$CONFIG_CARTOES_JSON" > "$RUNNER_TEMP/config_cartoes.json"
+
+      - name: Rodar o script
+        env:
+          PLUGGY_CLIENT_ID: ${{ secrets.PLUGGY_CLIENT_ID }}
+          PLUGGY_CLIENT_SECRET: ${{ secrets.PLUGGY_CLIENT_SECRET }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/keys.json
+          CONFIG_CARTOES: ${{ runner.temp }}/config_cartoes.json
+          # No agendamento grava sempre; na execução manual, só se a caixa "gravar" for marcada.
+          GRAVAR: ${{ github.event_name == 'schedule' || inputs.gravar }}
+        run: |
+          if [ "$GRAVAR" = "true" ]; then
+            python pluggy_cartoes.py --gravar
+          else
+            python pluggy_cartoes.py
+          fi
+
+      - name: Apagar arquivos de credenciais
+        if: always()
+        run: rm -f "$RUNNER_TEMP/keys.json" "$RUNNER_TEMP/config_cartoes.json"
