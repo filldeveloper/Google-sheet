@@ -10,7 +10,8 @@
       "account_ids": [],
       "colunas": "B:D",
       "celula_fechamento": "F5",
-      "dia_fechamento": 29
+      "dia_fechamento": 29,
+      "sufixo_descricao": "Thaíse"
     },
     {
       "nome": "Banco do Brasil",

@@ -371,10 +371,11 @@ def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de=None, 
             if d and v is not None:
                 ja_tem[(d.day, d.month, v)] += 1
 
+        sufixo = cartao.get("sufixo_descricao", "").strip()
         novas = []
         for d, desc, v in sorted(por_aba[(ano, mes)]):
             if not ja_existe(ja_tem, d, v):
-                novas.append([d.strftime("%d/%m/%Y"), desc, v])
+                novas.append([d.strftime("%d/%m/%Y"), f"{desc} {sufixo}" if sufixo else desc, v])
 
         if not novas:
             print(f"[{cartao['nome']}] {nome_aba}: nada novo.")

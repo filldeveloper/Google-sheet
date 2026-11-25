@@ -43,6 +43,9 @@ export PLUGGY_CLIENT_SECRET=...
 export GOOGLE_APPLICATION_CREDENTIALS=/caminho/para/conta-de-servico.json
 ```
 
+`sufixo_descricao` (opcional) é um texto colocado no fim de toda descrição daquele cartão,
+por exemplo o nome de quem usa o cartão.
+
 ### Uso
 
 ```
