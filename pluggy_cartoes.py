@@ -268,7 +268,11 @@ def linhas_da_transacao(t, fechamentos, faturas):
 
     if n <= 1:
         return [(aba, data_compra, descricao, valor, None)]
-    serie = (descricao.lower(), data_compra, n, valor)
+    # A mesma compra parcelada aparece uma vez por fatura, às vezes com data
+    # diferente e com 1 centavo de diferença entre parcelas. O que identifica a
+    # série é a descrição, o número de parcelas, o valor aproximado e a aba em
+    # que cairia a 1ª parcela.
+    serie = (descricao.lower(), n, round(valor), proximo_mes(*aba, -(k - 1)))
     # Esta parcela e as próximas, uma aba depois da outra.
     return [(proximo_mes(*aba, j - k), data_compra, f"{descricao} {j}/{n}", valor, (serie, j))
             for j in range(k, n + 1)]
@@ -288,7 +292,7 @@ def ja_existe(ja_tem, d, v):
     return False
 
 
-def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de=None):
+def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de=None, depurar=False):
     fech = Fechamentos(planilha, cartao)
     contas = pluggy.contas_credito(cartao["item_id"])
     escolhidas = cartao.get("account_ids") or cartao.get("account_id") or []
@@ -301,13 +305,22 @@ def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de=None):
         return
 
     por_aba = defaultdict(list)
+    # Uma série de parcelas pode vir várias vezes (uma por fatura). Para
+    # cada parcela, vale a que veio da fatura real, não a projetada.
+    parcelas = {}
     for conta in contas:
         faturas = pluggy.faturas(conta["id"])
-        # Uma série de parcelas pode vir várias vezes (uma por fatura). Para
-        # cada parcela, vale a que veio da fatura real, não a projetada.
-        parcelas = {}
         sem_fatura = 0
-        for t in pluggy.transacoes(conta["id"], desde):
+        transacoes = pluggy.transacoes(conta["id"], desde)
+        if depurar:
+            print(f"[{cartao['nome']}] conta {conta.get('name')} final {conta.get('number')}:")
+            for t in sorted(transacoes, key=lambda t: t["date"]):
+                meta = t.get("creditCardMetadata") or {}
+                print(f"    date={t['date'][:10]} purchaseDate={str(meta.get('purchaseDate'))[:10]}"
+                      f" parcela={meta.get('installmentNumber')}/{meta.get('totalInstallments')}"
+                      f" status={t.get('status')} bill={'sim' if meta.get('billId') else 'nao'}"
+                      f" valor={t['amount']} | {t.get('description')}")
+        for t in transacoes:
             if float(t["amount"]) > 0 and (t.get("creditCardMetadata") or {}).get("billId") not in faturas:
                 sem_fatura += 1
             for i, (aba, d, desc, v, serie) in enumerate(linhas_da_transacao(t, fech, faturas)):
@@ -318,8 +331,15 @@ def sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de=None):
         if sem_fatura:
             print(f"[{cartao['nome']}] {sem_fatura} compra(s) sem fatura na Pluggy "
                   "(fatura aberta): aba calculada pela data de fechamento.")
-        for (aba, d, desc, v), _ in parcelas.values():
-            por_aba[aba].append((d, desc, v))
+
+    # Todas as parcelas de uma série com a mesma data (a mais antiga vista).
+    primeira = {}
+    for (raiz, _j), ((_aba, d, _desc, _v), _i) in parcelas.items():
+        primeira[raiz] = min(d, primeira.get(raiz, d))
+    for (raiz, _j), ((aba, _d, desc, v), _i) in parcelas.items():
+        por_aba[aba].append((primeira[raiz], desc, v))
+    if depurar:
+        return
 
     if a_partir_de is None:
         aba_atual = fech.aba_da_compra(hoje)
@@ -382,6 +402,8 @@ def main():
     ap.add_argument("--a-partir-de", metavar="MM/AAAA",
                     help="só mexe nas abas a partir deste mês (ex.: 01/2027). "
                          "Padrão: a fatura que acabou de fechar e as seguintes")
+    ap.add_argument("--depurar", action="store_true",
+                    help="mostra os dados brutos de cada transação e não grava nada")
     ap.add_argument("--dias", type=int, default=75,
                     help="quantos dias para trás buscar (padrão 75)")
     args = ap.parse_args()
@@ -413,7 +435,7 @@ def main():
         m, a = args.a_partir_de.split("/")
         a_partir_de = (int(a), int(m))
     for cartao in config["cartoes"]:
-        sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de)
+        sincronizar_cartao(pluggy, planilha, cartao, desde, hoje, a_partir_de, args.depurar)
 
 
 if __name__ == "__main__":
