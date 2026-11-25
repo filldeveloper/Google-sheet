@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import pandas as pd 
 from time import sleep
 from pprint import pprint
-import credenciais
+import config
 import requests
 import json
 
@@ -32,9 +32,9 @@ def extrato_bb():
     chrome.get(url)
     sleep(7)
 
-    agencia = credenciais.agencia_bb
-    conta = credenciais.conta_bb
-    senha = credenciais.senha_bb
+    agencia = config.exigir('BB_AGENCIA')
+    conta = config.exigir('BB_CONTA')
+    senha = config.exigir('BB_SENHA')
 
     # Preencher o campo agência
     chrome.find_element(By.ID,"dependenciaOrigem").send_keys(agencia)
@@ -221,7 +221,8 @@ def extrato_caixa():
     chrome.get(url)
     sleep(7)
 
-    usuario = credenciais.usuario_caixa
+    usuario = config.exigir('CAIXA_USUARIO')
+    senha_caixa = config.exigir('CAIXA_SENHA')
     for letra in usuario:
         chrome.find_element(By.ID,"nomeUsuario").send_keys(letra)
         sleep(0.3)
@@ -233,21 +234,21 @@ def extrato_caixa():
     sleep(4)
 
     # Inserção de senha no teclado virtual
-    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[0]}]').click()
+    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{senha_caixa[0]}]').click()
     sleep(1)
-    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[1]}]').click()
+    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{senha_caixa[1]}]').click()
     sleep(1)
-    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[2]}]').click()
+    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{senha_caixa[2]}]').click()
     sleep(1)
-    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[3]}]').click()
+    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{senha_caixa[3]}]').click()
     sleep(1)
-    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[4]}]').click()
+    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{senha_caixa[4]}]').click()
     sleep(1)
-    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[5]}]').click()
+    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{senha_caixa[5]}]').click()
     sleep(1)
-    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[6]}]').click()
+    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{senha_caixa[6]}]').click()
     sleep(1)
-    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{credenciais.senha_caixa[7]}]').click()
+    chrome.find_element(By.XPATH,f'//*[@id="teclado"]/ul/li[{senha_caixa[7]}]').click()
     sleep(1)
     chrome.find_element(By.ID,'btnConfirmar').click()
     sleep(9)
@@ -360,9 +361,9 @@ def extrato_caixa():
 
 
 def msg_whatsapp(mensagem):
-    PHONE_ID = credenciais.PHONE_ID
-    TOKEN = credenciais.TOKEN
-    NUMBER = credenciais.NUMBER
+    PHONE_ID = config.exigir('WHATSAPP_PHONE_ID')
+    TOKEN = config.exigir('WHATSAPP_TOKEN')
+    NUMBER = config.exigir('WHATSAPP_NUMBER')
     MESSAGE = 'Teste'
 
     URL = "https://graph.facebook.com/v16.0/"+PHONE_ID+"/messages"

@@ -1,7 +1,17 @@
+# Segredos
+.env
 credenciais.py
 keys.json
+*.json.bak
+
+# Python
 venv/
-__pycahce__/
+.venv/
+__pycache__/
+*.pyc
+
+# Editor / outros
 .vscode/
 settings.json
 zapconfig.cfg
+user_photo.jpg

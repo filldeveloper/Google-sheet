@@ -5,6 +5,7 @@ from datetime import datetime, date
 from time import mktime
 import time
 from pprint import pprint
+import config
 
 
 # Chamando a função que pega os valores do extrato CAIXA
@@ -25,14 +26,14 @@ try:
     # Setar o range da aba mês - Fechamento da Fatura Caixa
     range_fechamento = f'{dicionario_meses[aba_mes]}!F5'
 
-    SERVICE_ACCOUNT_FILE = "C:\\Users\\S027668971\\Developments\\Google-sheet\\keys.json"
-    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    SERVICE_ACCOUNT_FILE = config.GOOGLE_SERVICE_ACCOUNT_FILE
+    SCOPES = config.SCOPES
     creds = None
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
     # The ID spreadsheet.
-    SAMPLE_SPREADSHEET_ID = '1QhNbaGgEAUzUL_FhOI5xfqTe643xI7lxmpKysub8lPI'
+    SAMPLE_SPREADSHEET_ID = config.exigir('SPREADSHEET_ID')
     service = build('sheets', 'v4', credentials=creds)
     sheet = service.spreadsheets()
 
@@ -155,8 +156,8 @@ try:
 
     # Fechar objeto de conexão com a api do googlesheet
     sheet.close()
-except:
-    print('ERRO NO SCRIPT DA CAIXA!')
+except Exception as erro:
+    print(f'ERRO NO SCRIPT DA CAIXA! {erro}')
     
 time.sleep(5)
 # --------------------------------------------------------------------------------------
@@ -191,14 +192,14 @@ print(f'Fechamento da próxima fatura Visa: {fechamento_fatura}')
 print(f'Histórico de compras Visa: {historico_compras_visa}')
 print(f'Histórico de compras Elo Nanquim: {historico_compras_nanquim}')
 
-SERVICE_ACCOUNT_FILE = "C:\\Users\\S027668971\\Developments\\Google-sheet\\keys.json"
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+SERVICE_ACCOUNT_FILE = config.GOOGLE_SERVICE_ACCOUNT_FILE
+SCOPES = config.SCOPES
 creds = None
 creds = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # The ID spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1QhNbaGgEAUzUL_FhOI5xfqTe643xI7lxmpKysub8lPI'
+SAMPLE_SPREADSHEET_ID = config.exigir('SPREADSHEET_ID')
 service = build('sheets', 'v4', credentials=creds)
 sheet = service.spreadsheets()
 

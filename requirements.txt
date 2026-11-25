@@ -1,6 +1,10 @@
-selenium
-bs4
-pandas
-lxml
-google-api-python-client
-webdriver-manager
+selenium>=4.10
+webdriver-manager>=4.0
+beautifulsoup4>=4.12
+lxml>=4.9
+pandas>=2.0
+requests>=2.31
+google-api-python-client>=2.100
+google-auth>=2.23
+python-dotenv>=1.0
+python-telegram-bot==13.15

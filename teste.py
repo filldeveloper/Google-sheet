@@ -1,5 +1,5 @@
 from funcoes_planilha_credito import mensagem_bot_telegram
-from credenciais import token_telegram, chat_id_telegram
+import config
 from telegram.ext import Updater
 import telegram
 import logging
@@ -7,8 +7,8 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-token = token_telegram
-chatid = chat_id_telegram
+token = config.exigir('TELEGRAM_TOKEN')
+chatid = config.exigir('TELEGRAM_CHAT_ID')
 
 updater = Updater(token=token, use_context=True)
 lista = [['16/04', 'DROGARIA SAUDE E', 18.4],
