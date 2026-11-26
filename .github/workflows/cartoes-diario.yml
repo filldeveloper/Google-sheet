@@ -7,6 +7,8 @@ on:
     # 10:17 UTC (7:17 em Brasília) e 21:17 UTC (18:17 em Brasília).
     - cron: "17 10 * * *"
     - cron: "17 21 * * *"
+    # TESTE: 14:20 UTC (11:20 em Brasília). Remover depois de confirmar que o agendamento roda.
+    - cron: "20 14 * * *"
   workflow_dispatch:
     inputs:
       gravar:
