@@ -2,8 +2,11 @@ name: Preencher planilha de cartões
 
 on:
   schedule:
-    # Todo dia às 10:00 UTC (7:00 no horário de Brasília). O GitHub pode atrasar alguns minutos.
-    - cron: "0 10 * * *"
+    # O GitHub atrasa e às vezes pula execuções agendadas, principalmente na hora cheia.
+    # Por isso roda fora da hora cheia e duas vezes ao dia (o script não duplica gastos):
+    # 10:17 UTC (7:17 em Brasília) e 21:17 UTC (18:17 em Brasília).
+    - cron: "17 10 * * *"
+    - cron: "17 21 * * *"
   workflow_dispatch:
     inputs:
       gravar:
