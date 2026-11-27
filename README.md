@@ -57,7 +57,7 @@ python pluggy_cartoes.py --gravar   # grava na planilha
 ### Rodar todo dia (GitHub Actions)
 
 O workflow `.github/workflows/cartoes-diario.yml` roda
-`python pluggy_cartoes.py --a-partir-de 12/2026 --gravar` duas vezes por dia, por volta das 7h e
+`python pluggy_cartoes.py --a-partir-de 01/2027 --gravar` duas vezes por dia, por volta das 7h e
 das 18h (horário de Brasília). O GitHub às vezes atrasa ou pula uma execução agendada; a segunda
 cobre essa falha, e o script não duplica gastos.
 O mês inicial fica em `A_PARTIR_DE`, no próprio workflow. Ele precisa de 4 Secrets, cadastrados em **Settings → Secrets and
